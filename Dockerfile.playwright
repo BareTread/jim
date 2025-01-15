@@ -1,0 +1,18 @@
+FROM --platform=linux/amd64 mcr.microsoft.com/playwright:v1.41.0-jammy
+
+# Install additional dependencies
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables
+ENV PORT=3003
+ENV PYTHONUNBUFFERED=1
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:3003/health || exit 1
+
+# Expose the port
+EXPOSE 3003
+
+# Run the Playwright service
+CMD ["playwright", "run-server", "--port=3003"] 

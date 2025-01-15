@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "${PORT:-11235}:${PORT:-11235}"
+    environment:
+      - CRAWL4AI_API_TOKEN=${CRAWL4AI_API_TOKEN:-jeremy}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MAX_CONCURRENT_TASKS=${MAX_CONCURRENT_TASKS:-5}
+      - PAGE_TIMEOUT=${PAGE_TIMEOUT:-30000}
+      - WORD_COUNT_THRESHOLD=${WORD_COUNT_THRESHOLD:-50}
+      - PORT=${PORT:-11235}
+      - HOST=${HOST:-0.0.0.0}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    volumes:
+      - ./output:/app/output
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '2'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-11235}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s 
